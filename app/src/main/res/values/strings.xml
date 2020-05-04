@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">LEET</string>
+    <string name="error">Oops! Ошибка сервера!</string>
+    <string name="details">Подробности: </string>
+    <string name="computer">Компьютер</string>
+    <string name="set">Установить</string>
+    <string name="initReservation1">Бронирование компьютера №</string>
+    <string name="initReservation2">Длительность бронирования: </string>
+    <string name="change">Изменить</string>
+    <string name="reserve">Забронировать</string>
+    <string name="error1">Ошибка!</string>
+    <string name="res_message_1">С вашего устройства уже было произведено бронирование! Отмените
+    ваше бронирование в разделе "Мои бронирования". \n Телефон для связи: 8-800-555-35-35</string>
+    <string name="res_message_2">К сожалению, выбранное Вами время уже занято. Пожалуйста, выберите другое время.</string>
+    <string name="res_message_3">Выбранное Вами время уже недоступно для бронирования. Пожалуйста, выберите другое время</string>
+    <string name="res_message_4">С вашего аккаунта уже было произведено бронирование! Отмените
+    ваше бронирование в разделе "Мои бронирования". \n Телефон для связи: 8-800-555-35-35</string>
+    <string name="description">Покажите этот код администратору</string>
+    <string name="digits">q@wertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_/-.$</string>
+    <string name="registration">Для регистрации заполните форму ниже. Обязательные поля отмечены синим цветом\n</string>
+</resources>
