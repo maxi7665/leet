@@ -2,7 +2,7 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
+//import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -12,10 +12,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 
-import android.app.Activity;
-import android.app.FragmentTransaction;
+//import android.app.Activity;
+//import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.app.Service;
+//import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,34 +32,34 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
+//import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
-import android.widget.Spinner;
-import android.widget.TabHost;
-import android.widget.TabWidget;
-import android.widget.TableLayout;
-import android.widget.TableRow;
+//import android.widget.Spinner;
+//import android.widget.TabHost;
+//import android.widget.TabWidget;
+//import android.widget.TableLayout;
+//import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 
 import com.google.android.material.tabs.TabLayout;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+//import com.google.gson.Gson;
+//import com.google.gson.GsonBuilder;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+//import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.prefs.Preferences;
+//import java.util.prefs.Preferences;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog.Builder ad;
 
 
-    private static int TAB1 = 30, TAB2 = 31, PAGER_ID = 32, TABS_ID = 33, TOURNAMENT_BUTTON_ID = 34;
+    //public static int TAB1 = 30, TAB2 = 31,
+    public static int PAGER_ID = 32, TABS_ID = 33; //TOURNAMENT_BUTTON_ID = 34;
 
     public ProgressDialog getPd() {
         ProgressDialog pd = new ProgressDialog(this);
@@ -134,8 +135,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         //setTitle("Результаты");
         ActionBar act = getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true);
-        act.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_menu_white_24dp));
+        if (act != null) {
+            act.setDisplayHomeAsUpEnabled(true);
+            act.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_menu_white_24dp));
+        }
 
 
         //TextView tbtext=findViewById(R.id.toolbar_text);
@@ -174,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     void news() {
         final ProgressDialog pd = getPd();
         pd.show();
-        TextView title = findViewById(R.id.toolbar_text);
+        //TextView title = findViewById(R.id.toolbar_text);
         //title.setText("Новости");
         setTitle("Новости");
         Retrofit retrofit = new Retrofit.Builder()
@@ -188,10 +191,10 @@ public class MainActivity extends AppCompatActivity {
 
         news.enqueue(new Callback<NewsList>() {
             @Override
-            public void onResponse(Call<NewsList> call, Response<NewsList> response) {
+            public void onResponse(@NonNull Call<NewsList> call, @NonNull Response<NewsList> response) {
 
-                if(response.body()!=null) {
-                    //todo - make defeat from null
+                if (response.body() != null) {
+
                     Log.d("_____", "Successfull get News!!: " + response.body().toString() + "///" + call.request().toString());
                     Log.d("_____", response.headers().toString() + "  ");
                     List<News> list = response.body().getList();
@@ -203,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<NewsList> call, Throwable t) {
+            public void onFailure(@NonNull Call<NewsList> call, @NonNull Throwable t) {
                 pd.dismiss();
                 Log.d("_____", "Error get News from server: " + t.toString());
                 LinearLayout content = findViewById(R.id.content_layout);
@@ -232,8 +235,8 @@ public class MainActivity extends AppCompatActivity {
         final ProgressDialog pd = getPd();
         pd.show();
         setFlagres(0);
-        Gson gson = new GsonBuilder().setLenient().create();
-        TextView title = findViewById(R.id.toolbar_text);
+        //Gson gson = new GsonBuilder().setLenient().create();
+        //TextView title = findViewById(R.id.toolbar_text);
         //title.setText("Бронирование");
         setTitle("Бронирование");
 
@@ -249,15 +252,20 @@ public class MainActivity extends AppCompatActivity {
 
         computers.enqueue(new Callback<ComputerList>() {
             @Override
-            public void onResponse(Call<ComputerList> call, Response<ComputerList> response) {
-                Log.d("_________", response.body().getList().get(0).getGraphicsCard());
+            public void onResponse(@NonNull Call<ComputerList> call, @NonNull Response<ComputerList> response) {
+
                 pd.dismiss();
-                setCompList(response.body().getList());
+                if (response.body() != null && response.body().getList() != null) {
+                    setCompList(response.body().getList());
+                    Log.d("_________", response.body().getList().get(0).getGraphicsCard());
+                }
+
                 if (getResList() != null) {//check lists for getting
                     if (getCompList() != null) {
                         if (getFlagres() == 0) {//because visualizeReservation must be done only for one time
                             visualizeReservation();
                             setFlagres(1);
+
                         }
                     }
                 }
@@ -265,12 +273,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ComputerList> call, Throwable t) {
+            public void onFailure(@NonNull Call<ComputerList> call, @NonNull Throwable t) {
                 pd.dismiss();
                 LinearLayout content = findViewById(R.id.content_layout);
                 content.removeAllViews();
                 content.addView(showError(t, 1));
-                Log.d("_______", t.getMessage());
+                if (t.getMessage() != null) {
+                    Log.d("_______", t.getMessage());
+                }
+
             }
         });
 
@@ -278,8 +289,10 @@ public class MainActivity extends AppCompatActivity {
 
         reservations.enqueue(new Callback<ReservationList>() {
             @Override
-            public void onResponse(Call<ReservationList> call, Response<ReservationList> response) {
-                setResList(response.body().getList());
+            public void onResponse(@NonNull Call<ReservationList> call, @NonNull Response<ReservationList> response) {
+                if (response.body() != null) {
+                    setResList(response.body().getList());
+                }
                 pd.dismiss();
 
 
@@ -294,12 +307,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ReservationList> call, Throwable t) {
+            public void onFailure(@NonNull Call<ReservationList> call, @NonNull Throwable t) {
                 pd.dismiss();
                 LinearLayout content = findViewById(R.id.content_layout);
                 content.removeAllViews();
                 content.addView(showError(t, 1));
-                Log.d("_______", t.getMessage());
+                if (t.getMessage() != null) {
+                    Log.d("_______", t.getMessage());
+                }
+
             }
         });
 
@@ -315,15 +331,24 @@ public class MainActivity extends AppCompatActivity {
         Call<Reservation_codeList> call = get_call_reservation();
         call.enqueue(new Callback<Reservation_codeList>() {
             @Override
-            public void onResponse(Call<Reservation_codeList> call, Response<Reservation_codeList> response) {
+            public void onResponse(@NonNull Call<Reservation_codeList> call, @NonNull Response<Reservation_codeList> response) {
                 pd.dismiss();
-                setRes_code(response.body().getList());
-                my_reservation(response.body().getList());
-                Log.d("______response_size", response.body().getList().size() + "");
+                if (response.body() != null) {
+                    if (response.body().getList() != null) {
+                        setRes_code(response.body().getList());
+                        my_reservation(response.body().getList());
+                        Log.d("______response_size", response.body().getList().size() + "");
+                    } else {
+                        show_error();
+                    }
+                } else {
+                    show_error();
+                }
+
             }
 
             @Override
-            public void onFailure(Call<Reservation_codeList> call, Throwable t) {
+            public void onFailure(@NonNull Call<Reservation_codeList> call, @NonNull Throwable t) {
 
                 //showError(t,2);
                 pd.dismiss();
@@ -338,11 +363,9 @@ public class MainActivity extends AppCompatActivity {
                         content.addView(showError(t, 2));
                     }
                     Log.d("______error:", t.getMessage());
-                    LinearLayout content = findViewById(R.id.content_layout);
+                    //LinearLayout content = findViewById(R.id.content_layout);
                     //content.removeAllViews();
                     //content.addView(showError(t,2));
-                } else {
-
                 }
             }
         });
@@ -353,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
     void get_tournament() {
         final ProgressDialog pd = getPd();
         pd.show();
-        TextView title = findViewById(R.id.toolbar_text);
+        //TextView title = findViewById(R.id.toolbar_text);
         //title.setText("Турниры");
         setTitle("Турниры");
         LinearLayout content = findViewById(R.id.content_layout);
@@ -363,8 +386,8 @@ public class MainActivity extends AppCompatActivity {
 
         tournament.enqueue(new Callback<TournamentList>() {
             @Override
-            public void onResponse(Call<TournamentList> call, Response<TournamentList> response) {
-                if (response != null) {
+            public void onResponse(@NonNull Call<TournamentList> call, @NonNull Response<TournamentList> response) {
+                if (response.body() != null) {
                     pd.dismiss();
                     setTourList(response.body().json);
                     show_tournaments();
@@ -376,9 +399,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<TournamentList> call, Throwable t) {
+            public void onFailure(@NonNull Call<TournamentList> call, @NonNull Throwable t) {
                 pd.dismiss();
-                LinearLayout lin=findViewById(R.id.content_layout);
+                LinearLayout lin = findViewById(R.id.content_layout);
                 lin.addView(showError(t, 3));
                 Log.d("////", "fail tour");
             }
@@ -495,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
             if (id != -1) {
                 Intent startResult = new Intent(MainActivity.this, TournamentResult.class);
                 startResult.putExtra("ip", ip);
-                startResult.putExtra("id", (int)id);
+                startResult.putExtra("id", (int) id);
                 startActivity(startResult);
             }
         }
@@ -553,7 +576,7 @@ public class MainActivity extends AppCompatActivity {
     }//show tabs in container
 
     void my_reservation(final List<Reservation_code> list) {
-        TextView title = findViewById(R.id.toolbar_text);
+
         //title.setText("Мои бронирования");
         setTitle("Мои бронирования");
 
@@ -673,6 +696,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout content = findViewById(R.id.content_layout);
         content.removeAllViews();
 
+
         LinearLayout a = new LinearLayout(getApplicationContext());
         a.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         a.setOrientation(LinearLayout.VERTICAL);
@@ -725,9 +749,9 @@ public class MainActivity extends AppCompatActivity {
         ListView List = findViewById(R.id.nav_list);
         ArrayAdapter<String> ArrA;
         if (get_token().equals(""))
-            ArrA = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_list_item, menu);
+            ArrA = new ArrayAdapter<>(getApplicationContext(), R.layout.simple_list_item, menu);
         else
-            ArrA = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_list_item, menu2);
+            ArrA = new ArrayAdapter<>(getApplicationContext(), R.layout.simple_list_item, menu2);
 
         List.setAdapter(ArrA);
 
@@ -776,19 +800,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        AppCompatButton about=findViewById(R.id.about_button);
+        AppCompatButton about = findViewById(R.id.about_button);
 
         about.setOnClickListener(abou);
     }
 
-    View.OnClickListener abou=new View.OnClickListener() {
+    View.OnClickListener abou = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AlertDialog.Builder abo=new AlertDialog.Builder(MainActivity.this);
+            AlertDialog.Builder abo = new AlertDialog.Builder(MainActivity.this);
 
             abo.setMessage("LEET v2.0\n21.04.2020\n\nРазработка\nn1z3r\nBobbyLab");
             abo.setTitle("О программе");
-            abo.setPositiveButton("ОК",null);
+            abo.setPositiveButton("ОК", null);
             abo.create().show();
         }
     };
@@ -799,7 +823,7 @@ public class MainActivity extends AppCompatActivity {
         int[] free = new int[comp.size()];
         Date now = new Date();
         TimeZone timezone = TimeZone.getDefault();
-        Date buf = new Date();
+        Date buf;
         long raz = 3 * 3600000 - timezone.getOffset(now.getTime());//difference between gmt+3 and user's gmt
         long start, end, current = now.getTime() + raz;//variable current corrects by difference
         int minutes;
@@ -823,9 +847,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
-        for (int i = 0; i < free.length; i++) {
-            Log.d("_____", free[i] + "");
+        for (int value : free) {
+            Log.d("_____", value + "");
         }
 
         final int[] free2 = free;
@@ -858,7 +881,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    LinearLayout initRow(final int pos, final int free, final int id) {//making one row to see reservation (one computer)
+    /*LinearLayout initRow(final int pos, final int free, final int id) {//making one row to see reservation (one computer)
         LinearLayout a = new LinearLayout(getApplicationContext());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         DisplayMetrics metr = this.getResources().getDisplayMetrics();
@@ -917,10 +940,10 @@ public class MainActivity extends AppCompatActivity {
 
         return a;
 
-    }
+    }*/
 
 
-    LinearLayout initNews(final String title, final String text) {
+    /*LinearLayout initNews(final String title, final String text) {
         LinearLayout a = new LinearLayout(getApplicationContext());
         a.setOrientation(LinearLayout.VERTICAL);
         a.addView(initText(title, 25));
@@ -942,7 +965,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         return a;
-    }
+    }*/
 
 
     TextView initText(String text, int size) {
@@ -987,7 +1010,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public Date parseDateTime(String datetime) {
-        Date now = new Date();
+        //Date now = new Date();
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         Date buf = new Date();
         try {
@@ -1000,7 +1023,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public Date parseDate(String datetime) {
+    /*public Date parseDate(String datetime) {
         Date now = new Date();
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         Date buf = new Date();
@@ -1011,7 +1034,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return buf;
-    }
+    }*/
 
     public void set_flag_auth(int flag_auth) {
         this.flag_auth = flag_auth;
@@ -1023,9 +1046,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String get_restore_token() {
         SharedPreferences restore_token = getPreferences(MODE_PRIVATE);
-        String restore_toke = restore_token.getString("res_token", "0");
 
-        return restore_toke;
+        return restore_token.getString("res_token", "0");
 
     }
 
@@ -1060,26 +1082,32 @@ public class MainActivity extends AppCompatActivity {
             Call<String> call = api.restore_login("get", "restore_login", r_t);
             call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     //Toast.makeText(getApplicationContext(), response.body(), Toast.LENGTH_SHORT).show();
-                    Log.d("111______", response.body());
-                    String tokens = response.body();
-                    Log.d("111___", tokens.length() + "");
-                    if (tokens.length() == 128) {
-                        set_token(tokens.substring(0, 64));//setting token
-                        set_restore_token(tokens.substring(64, 128));//setting restore token
-                        set_flag_auth(1);
+
+                    if (response.body() != null) {
+                        Log.d("111______", response.body());
+                        String tokens = response.body();
+                        Log.d("111___", tokens.length() + "");
+                        if (tokens.length() == 128) {
+                            set_token(tokens.substring(0, 64));//setting token
+                            set_restore_token(tokens.substring(64, 128));//setting restore token
+                            set_flag_auth(1);
+                            profile_view();
+                        } else {
+                            set_flag_auth(0);
+                            set_restore_token("0");
+                        }
                         profile_view();
+                        setNavigation();
                     } else {
-                        set_flag_auth(0);
-                        set_restore_token("0");
+                        show_error();
                     }
-                    profile_view();
-                    setNavigation();
+
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                     set_flag_auth(0);//setting auth flag is off
                     set_restore_token("0");//
                     profile_view();
@@ -1210,9 +1238,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Call<TournamentList> get_main_tournaments() {
-        Call<TournamentList> call = get_gson_api().get_main_tournaments("get", "get_main_tournaments");
 
-        return call;
+        return get_gson_api().get_main_tournaments("get", "get_main_tournaments");
 
 
     }
@@ -1224,8 +1251,7 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 // add other factories here, if needed.
                 .build();
-        ApiInterface api = retrofit.create(ApiInterface.class);
-        return api;
+        return retrofit.create(ApiInterface.class);
     }
 
     public void set_profile_text(String text) {
@@ -1244,14 +1270,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d("____", token);
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 pro.setText("Добро пожаловать, " + response.body());
                 //Log.d("name",response.body());
 
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 pro.setText("Добро пожаловать!");
 
             }
@@ -1265,8 +1291,7 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 // add other factories here, if needed.
                 .build();
-        ApiInterface api = retrofit.create(ApiInterface.class);
-        return api;
+        return retrofit.create(ApiInterface.class);
     }
 
     private void alert(String message) {
@@ -1286,13 +1311,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                DrawerLayout b = findViewById(R.id.drawer_layout);
-                b.openDrawer(Gravity.LEFT);
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            DrawerLayout b = findViewById(R.id.drawer_layout);
+            b.openDrawer(Gravity.LEFT);
 
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
 

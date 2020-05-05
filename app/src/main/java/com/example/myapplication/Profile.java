@@ -1,21 +1,19 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,13 +23,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Profile extends Login {
 
-    String token="",ip="";
+    String token = "", ip = "";
     Button change;
 
 
-
     @Override
-    protected void onRestart(){
+    protected void onRestart() {
         super.onRestart();
         get_profile();
 
@@ -43,30 +40,31 @@ public class Profile extends Login {
         super.onCreate(savedInstanceState);
 
 
-        if(savedInstanceState!=null){
-            token=savedInstanceState.getString("token");
-            ip=savedInstanceState.getString("ip");
-            Log.d("____", "restore "+ip+" "+token);
+        if (savedInstanceState != null) {
+            token = savedInstanceState.getString("token");
+            ip = savedInstanceState.getString("ip");
+            Log.d("____", "restore " + ip + " " + token);
         } else {
             Intent get = getIntent();
             token = get.getStringExtra("token");
             ip = get.getStringExtra("ip");
-            Log.d("___","from intent");
+            Log.d("___", "from intent");
         }
 
 
         setContentView(R.layout.activity_profile);
-        Toolbar toolbar=findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Профиль");
-        ActionBar act=getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true);
+        ActionBar act = getSupportActionBar();
+        if (act != null) {
+            act.setDisplayHomeAsUpEnabled(true);
+        }
         //setMenuButton();
         //setToolbarText("Профиль");
-        Button logout=findViewById(R.id.profile_logout);
-        change=findViewById(R.id.profile_change);
+        Button logout = findViewById(R.id.profile_logout);
+        change = findViewById(R.id.profile_change);
         change.setOnClickListener(change_listener);
-
 
 
         logout.setOnClickListener(new View.OnClickListener() {
@@ -81,26 +79,26 @@ public class Profile extends Login {
 
     }
 
-    View.OnClickListener change_listener=new View.OnClickListener() {
+    View.OnClickListener change_listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Bundle a;
+            //Bundle a;
 
-            Intent inte=new Intent(Profile.this, Profile_Change.class);
+            Intent inte = new Intent(Profile.this, Profile_Change.class);
             inte.putExtra("ip", ip);
             inte.putExtra("token", token);
             startActivity(inte);
         }
     };
 
-    void setToolbarText(String str){
+    /*void setToolbarText(String str){
         TextView tbtext=findViewById(R.id.toolbar_text);
         tbtext.setText(str);
 
-    }
+    }*/
 
 
-    private void LogOut(){
+    private void LogOut() {
         AlertDialog.Builder ad;
 
         ad = new AlertDialog.Builder(this);
@@ -122,25 +120,29 @@ public class Profile extends Login {
         alert.show();
     }
 
-    private void get_profile(){
-        final ProgressDialog pd=getPd();
+    private void get_profile() {
+        final ProgressDialog pd = getPd();
         pd.show();
-        Call<UserList> call=get_call_user();
+        Call<UserList> call = get_call_user();
         call.enqueue(new Callback<UserList>() {
             @Override
-            public void onResponse(Call<UserList> call, Response<UserList> response) {
-                if(response.body().json.size()>0){
-                    pd.dismiss();
-                setProfileData(response.body().json.get(0));}
-                else {
-                    Log.d("___", "empty");
-                    alert();}
+            public void onResponse(@NonNull Call<UserList> call, @NonNull Response<UserList> response) {
+                if (response.body() != null) {
+                    if (response.body().json.size() > 0) {
+                        pd.dismiss();
+                        setProfileData(response.body().json.get(0));
+                    } else {
+                        Log.d("___", "empty");
+                        alert();
+                    }
+                }
             }
 
             @Override
-            public void onFailure(Call<UserList> call, Throwable t) {
+            public void onFailure(@NonNull Call<UserList> call, @NonNull Throwable t) {
                 pd.dismiss();
-                Log.d("__", t.getMessage());
+                if (t.getMessage() != null)
+                    Log.d("__", t.getMessage());
                 alert();
 
 
@@ -151,7 +153,7 @@ public class Profile extends Login {
     }
 
 
-    private void alert(){
+    private void alert() {
         AlertDialog.Builder ad = new AlertDialog.Builder(Profile.this);
         ad.setTitle("Ошибка!");
         ad.setMessage("Ошибка связи с сервером!");
@@ -173,7 +175,7 @@ public class Profile extends Login {
         ad.create().show();
     }
 
-    void alert_exit(){
+    void alert_exit() {
         AlertDialog.Builder ad = new AlertDialog.Builder(Profile.this);
         ad.setTitle("Выберите вариант");
         ad.setMessage("Выйти из системы?");
@@ -194,28 +196,26 @@ public class Profile extends Login {
         ad.create().show();
     }
 
-    private Call<UserList> get_call_user(){
+    private Call<UserList> get_call_user() {
 
-        ApiInterface api=get_gson_api();//get api realization
-        Call<UserList> res = api.get_user("get", "get_user", token);
+        ApiInterface api = get_gson_api();//get api realization
 
 
-        return  res;
+        return api.get_user("get", "get_user", token);
 
     }
 
-    private ApiInterface get_gson_api(){
+    private ApiInterface get_gson_api() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+ip+"/")
+                .baseUrl("http://" + ip + "/")
                 .addConverterFactory(GsonConverterFactory.create())
                 // add other factories here, if needed.
                 .build();
-        ApiInterface api=retrofit.create(ApiInterface.class);
-        return  api;
+        return retrofit.create(ApiInterface.class);
     }
 
     public ProgressDialog getPd() {
-        ProgressDialog pd=new ProgressDialog(this);
+        ProgressDialog pd = new ProgressDialog(this);
         pd.setTitle("Загрузка");
         pd.setMessage("Подождите...");
         // меняем стиль на индикатор
@@ -227,28 +227,27 @@ public class Profile extends Login {
         return pd;
     }
 
-    private void setProfileData(User user){
-        TextView login=findViewById(R.id.profile_login);
-        TextView text1=findViewById(R.id.textView2),text2=findViewById(R.id.textView3);
+    private void setProfileData(User user) {
+        TextView login = findViewById(R.id.profile_login);
+        TextView text1 = findViewById(R.id.textView2), text2 = findViewById(R.id.textView3);
         text1.setText("");
         text2.setText("");
         login.setText(user.getLogin());
-        String [] types={"E-mail", "Телефон", "Имя","Фамилия","Отчество","Команда"};
-        String[] cont={user.getEMail(),user.getNumber(),user.getName(),user.getSurname(),user.getSecondName(),user.getTeam()};
+        String[] types = {"E-mail", "Телефон", "Имя", "Фамилия", "Отчество", "Команда"};
+        String[] cont = {user.getEMail(), user.getNumber(), user.getName(), user.getSurname(), user.getSecondName(), user.getTeam()};
 
-        for(int i=0;i<types.length;i++){
-            if(cont[i].length()>0 && !(cont[i].equals("0"))) {
+        for (int i = 0; i < types.length; i++) {
+            if (cont[i].length() > 0 && !(cont[i].equals("0"))) {
                 text1.append(types[i] + "\n");
                 text2.append(cont[i] + "\n");
-            } else if(cont[i].equals("0")){
-                cont[i]="Нет";
+            } else if (cont[i].equals("0")) {
+                cont[i] = "Нет";
                 text1.append(types[i] + "\n");
                 text2.append(cont[i] + "\n");
             }
         }
 
     }
-
 
 
     @Override
@@ -264,8 +263,8 @@ public class Profile extends Login {
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        token=savedInstanceState.getString("token");
-        ip=savedInstanceState.getString("ip");
+        token = savedInstanceState.getString("token");
+        ip = savedInstanceState.getString("ip");
 
         Log.d("___", "restore");
 
@@ -275,12 +274,11 @@ public class Profile extends Login {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            onBackPressed();
 
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
 

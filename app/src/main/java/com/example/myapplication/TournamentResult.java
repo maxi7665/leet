@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -38,6 +39,7 @@ public class TournamentResult extends AppCompatActivity {
 
 
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,9 @@ public class TournamentResult extends AppCompatActivity {
         setSupportActionBar(toolbar);
         setTitle("Результаты");
         ActionBar act=getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true);
+        if (act != null) {
+            act.setDisplayHomeAsUpEnabled(true);
+        }
         Intent getintent=getIntent();
         ip=getintent.getStringExtra("ip");
         id=getintent.getIntExtra("id",0)+"";
@@ -88,7 +92,7 @@ public class TournamentResult extends AppCompatActivity {
 
     }
 
-    private class MyWebViewClient extends WebViewClient {
+   /* private class MyWebViewClient extends WebViewClient {
         @TargetApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -109,18 +113,17 @@ public class TournamentResult extends AppCompatActivity {
             view.loadUrl(url);
             return true;
         }
-    }
+    }*/
 
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            onBackPressed();
 
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
 

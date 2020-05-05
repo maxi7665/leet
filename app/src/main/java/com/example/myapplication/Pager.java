@@ -4,20 +4,21 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
 class Pager extends PagerAdapter {
 
-    List<View> views;
+    private List<View> views;
     Context context;
-    String[] titles;
+    private String[] titles;
 
-    public Pager(List<View> views, Context context,String[] tit) {
+    Pager(List<View> views, Context context, String[] tit) {
         this.views = views;
         this.context = context;
-        titles=tit;
+        titles = tit;
     }
 
     public View getView(int position) {
@@ -30,26 +31,27 @@ class Pager extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == object;
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(ViewGroup container, int position, @NonNull Object object) {
         container.removeView(views.get(position));
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public @NonNull
+    Object instantiateItem(ViewGroup container, int position) {
         View view = views.get(position);
         container.addView(view);
         return view;
     }
 
     @Override
-    public int getItemPosition(Object object) {
+    public int getItemPosition(@NonNull Object object) {
         for (int index = 0; index < getCount(); index++) {
-            if ((View) object == views.get(index)) {
+            if (object == views.get(index)) {
                 return index;
             }
         }
@@ -58,11 +60,10 @@ class Pager extends PagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if(position <titles.length)
-        return titles[position];
+        if (position < titles.length)
+            return titles[position];
         else return "page";
     }
-
 
 
 }

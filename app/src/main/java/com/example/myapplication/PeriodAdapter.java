@@ -8,30 +8,28 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 public class PeriodAdapter extends BaseAdapter {
 
     Context context;
-    LayoutInflater inf;
-    int start;
-    String[] periods;
-    int[] flags;
+    private LayoutInflater inf;
+    private int start;
+    private String[] periods;
+    private int[] flags;
 
 
-    PeriodAdapter(int sta, int[] fla, String[] per, Context cont){
-        context=cont;//getting activity context
-        inf=(LayoutInflater) cont.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//get service for creating views from xml
-        start=sta;
-        flags=fla;
-        periods=per;
+    PeriodAdapter(int sta, int[] fla, String[] per, Context cont) {
+        context = cont;//getting activity context
+        inf = (LayoutInflater) cont.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//get service for creating views from xml
+        start = sta;
+        flags = fla;
+        periods = per;
 
 
     }
 
     @Override
     public int getCount() {
-        return 48-start;
+        return 48 - start;
     }
 
     @Override
@@ -41,25 +39,25 @@ public class PeriodAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position+start;
+        return position + start;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view=convertView;
+        View view = convertView;
         if (view == null) {
             view = inf.inflate(R.layout.period_layout, parent, false);
         }
 
-        TextView period=view.findViewById(R.id.period_info);
+        TextView period = view.findViewById(R.id.period_info);
         period.setText("Время: ");
-        period.append(periods[position+start]);
+        period.append(periods[position + start]);
 
-        TextView state=view.findViewById(R.id.period_state);
-        ImageView state_ind=view.findViewById(R.id.period_state_indicator);
+        TextView state = view.findViewById(R.id.period_state);
+        ImageView state_ind = view.findViewById(R.id.period_state_indicator);
 
 
-        if(flags[position] == 1) {
+        if (flags[position] == 1) {
             state.setText("Занято");
             state_ind.setImageResource(R.drawable.red);
         } else {

@@ -56,7 +56,7 @@ public class TournamentRegistration extends AppCompatActivity {
                     Call<String> a = cancel_registration(id, token);
                     a.enqueue(new Callback<String>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
 
                             if (response.body() != null) {
                                 if (response.body().equals("1")) {
@@ -73,7 +73,7 @@ public class TournamentRegistration extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                             pd.dismiss();
                             show_error("Ошибка связи с сервером!");
                         }
@@ -82,7 +82,7 @@ public class TournamentRegistration extends AppCompatActivity {
 
                 }
             };
-            if (reg_state == false && !token.equals("")) {
+            if (!reg_state && !token.equals("")) {
 
                 Call<String> call = add_registration(id, token);
                 final ProgressDialog pd = getPd();
@@ -90,20 +90,24 @@ public class TournamentRegistration extends AppCompatActivity {
 
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
 
                         if (response.body() != null) {
                             Log.d("_____", "responce  " + response.body());
                             String res = response.body();
-                            if (res.equals("1")) {
-                                get_information();
-                                success_reg();
+                            switch (res) {
+                                case "1":
+                                    get_information();
+                                    success_reg();
 
-                            } else if (res.equals("3")) {
-                                show_error("К сожалению, регистрация завершена");
+                                    break;
+                                case "3":
+                                    show_error("К сожалению, регистрация завершена");
 
-                            } else if (res.equals("2")) {
-                                show_error("Вы уже зарегистрированы на этот турнир!");
+                                    break;
+                                case "2":
+                                    show_error("Вы уже зарегистрированы на этот турнир!");
+                                    break;
                             }
                         } else {
                             Log.d("___", " responce null");
@@ -112,7 +116,7 @@ public class TournamentRegistration extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                         pd.dismiss();
                         Log.d("____", "failed " + t.getMessage());
                     }
@@ -172,7 +176,9 @@ public class TournamentRegistration extends AppCompatActivity {
         setSupportActionBar(toolbar);
         //setTitle(tbtext);
         ActionBar act = getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true);
+        if (act != null) {
+            act.setDisplayHomeAsUpEnabled(true);
+        }
 
         get_information();
 
@@ -191,12 +197,14 @@ public class TournamentRegistration extends AppCompatActivity {
         Call<ListTDate> call = get_tournament_date(id, token);
         call.enqueue(new Callback<ListTDate>() {
             @Override
-            public void onResponse(Call<ListTDate> call, Response<ListTDate> response) {
-                if(response.body().json.size()>0)
-                tour = response.body().json.get(0);
+            public void onResponse(@NonNull Call<ListTDate> call, @NonNull Response<ListTDate> response) {
+                if (response.body() != null && response.body().json.size() > 0)
+                    tour = response.body().json.get(0);
                 if (tour != null) {
-                    Log.d("SUCESS___", response.body().json.size() + "     " + response.body().json.get(0).getIdTournament() + "    " + tour.getAccepted()
-                            + "   " + tour.getMaxPlayers() + token);
+                    if (response.body() != null) {
+                        Log.d("SUCESS___", response.body().json.size() + "     " + response.body().json.get(0).getIdTournament() + "    " + tour.getAccepted()
+                                + "   " + tour.getMaxPlayers() + token);
+                    }
 
                     Log.d("SUCCESS__", tour.getTournamentName() + "   " + tour.getIdTournament());
                     if (tour.getAcceptFlag().equals("1")) {
@@ -217,10 +225,11 @@ public class TournamentRegistration extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ListTDate> call, Throwable t) {
+            public void onFailure(@NonNull Call<ListTDate> call, @NonNull Throwable t) {
                 pd.dismiss();
-
-                Log.d("Error____", t.getMessage());
+                if (t.getMessage() != null) {
+                    Log.d("Error____", t.getMessage());
+                }
 
             }
         });
@@ -251,7 +260,6 @@ public class TournamentRegistration extends AppCompatActivity {
         register.getBackground().setColorFilter(0xff00ff00, PorterDuff.Mode.MULTIPLY);
 
 
-
     }
 
     public void setMenuButton() {
@@ -277,8 +285,7 @@ public class TournamentRegistration extends AppCompatActivity {
         TextView max_places = findViewById(R.id.textView6);
         TextView game_name = findViewById(R.id.game_name);
         TextView datetime = findViewById(R.id.date_time);
-        TextView description=findViewById(R.id.tour_description);
-
+        TextView description = findViewById(R.id.tour_description);
 
 
         int max = Integer.parseInt(tour.getMaxPlayers());
@@ -303,7 +310,7 @@ public class TournamentRegistration extends AppCompatActivity {
         game_name.setText("Дисциплина: " + tour.getGameName());
         datetime.setText("Дата и время: " + tour.getDate() + " " + tour.getHTime());
 
-        if(!tour.getDescription().equals("0")){
+        if (!tour.getDescription().equals("0")) {
             description.setText(tour.getDescription());
         }
 
@@ -325,9 +332,8 @@ public class TournamentRegistration extends AppCompatActivity {
     }
 
     private Call<ListTDate> get_tournament_date(String id_tour, String token) {
-        Call<ListTDate> call = get_gson_api().get_reg_tournament("get", "get_reg_tournament_v2", id_tour, token);
 
-        return call;
+        return get_gson_api().get_reg_tournament("get", "get_reg_tournament_v2", id_tour, token);
     }
 
     private ApiInterface get_string_api() {
@@ -336,14 +342,12 @@ public class TournamentRegistration extends AppCompatActivity {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 // add other factories here, if needed.
                 .build();
-        ApiInterface api = retrofit.create(ApiInterface.class);
-        return api;
+        return retrofit.create(ApiInterface.class);
     }
 
     private Call<String> add_registration(String id_tour, String token) {
-        Call<String> call = get_string_api().accept_user_in_tournament("update", "accept_user_in_tournament", id_tour, token);
 
-        return call;
+        return get_string_api().accept_user_in_tournament("update", "accept_user_in_tournament", id_tour, token);
     }
 
     private Call<String> cancel_registration(String id_tour, String token) {
@@ -392,12 +396,11 @@ public class TournamentRegistration extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            onBackPressed();
 
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
 

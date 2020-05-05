@@ -20,30 +20,31 @@ public class DetailizeNews extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailize_news);
-        Intent intent=getIntent();
+        Intent intent = getIntent();
         //setMenuButton();
         //setToolbarText(intent.getStringExtra("Title"));
 
-        Toolbar toolbar=findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(intent.getStringExtra("Title"));
-        ActionBar act=getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true);
+        ActionBar act = getSupportActionBar();
+        if (act != null) {
+            act.setDisplayHomeAsUpEnabled(true);
+        }
 
 
-
-        LinearLayout lay=findViewById(R.id.layout);
-        lay.addView(initText(intent.getStringExtra("Text"),25,getResources().getColor(R.color.textcolor)));
+        LinearLayout lay = findViewById(R.id.layout);
+        lay.addView(initText(intent.getStringExtra("Text"), 25, getResources().getColor(R.color.textcolor)));
 
         //lay.addView(initButton("НАЗАД",30));
 
     }
 
 
-    void setMenuButton(){
-        ImageView img=findViewById(R.id.imgbutton);
+    void setMenuButton() {
+        ImageView img = findViewById(R.id.imgbutton);
         img.setImageResource(R.drawable.back);
-        LinearLayout i=findViewById(R.id.laybutton);
+        LinearLayout i = findViewById(R.id.laybutton);
         i.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,8 +55,8 @@ public class DetailizeNews extends AppCompatActivity {
     }
 
 
-    TextView initText(String text, int size,int color){
-        TextView a=new TextView(getApplicationContext());
+    TextView initText(String text, int size, int color) {
+        TextView a = new TextView(getApplicationContext());
         a.setTextSize(size);
         a.setText(text);
         a.setTextColor(color);
@@ -63,7 +64,7 @@ public class DetailizeNews extends AppCompatActivity {
     }
 
 
-    Button initButton(String text, int size){
+    /*Button initButton(String text, int size){
         Button a=new Button(getApplicationContext());
         a.setText(text);
         a.setTextSize(size);
@@ -75,23 +76,22 @@ public class DetailizeNews extends AppCompatActivity {
             }
         });
         return a;
-    }
+    }*/
 
 
-    public void setToolbarText(String a){
-        TextView tbtext=findViewById(R.id.toolbar_text);
+    public void setToolbarText(String a) {
+        TextView tbtext = findViewById(R.id.toolbar_text);
         tbtext.setText(a);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            onBackPressed();
 
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
 

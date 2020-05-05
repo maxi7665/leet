@@ -1,11 +1,5 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -24,7 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,13 +68,15 @@ public class Profile_Change extends AppCompatActivity {
         setSupportActionBar(toolbar);
         setTitle("Изменить профиль");
         ActionBar act = getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true);
+        if (act != null) {
+            act.setDisplayHomeAsUpEnabled(true);
+        }
 
 
         main_list = findViewById(R.id.change_list);
         container = findViewById(R.id.container);
 
-        ad = new ArrayAdapter<String>(this, R.layout.simple_list_item, s1);
+        ad = new ArrayAdapter<>(this, R.layout.simple_list_item, s1);
         main_list.setAdapter(ad);
         main_list.setOnItemClickListener(list);
 
@@ -138,7 +139,7 @@ public class Profile_Change extends AppCompatActivity {
         pd.show();
         get_call_user().enqueue(new Callback<UserList>() {
             @Override
-            public void onResponse(Call<UserList> call, Response<UserList> response) {
+            public void onResponse(@NonNull Call<UserList> call, @NonNull Response<UserList> response) {
                 pd.dismiss();
                 if (response.body() != null) {
                     user = response.body().json.get(0);
@@ -166,7 +167,7 @@ public class Profile_Change extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<UserList> call, Throwable t) {
+            public void onFailure(@NonNull Call<UserList> call, @NonNull Throwable t) {
                 pd.dismiss();
                 alert();
 
@@ -204,7 +205,7 @@ public class Profile_Change extends AppCompatActivity {
             pd.show();
             call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     pd.dismiss();
                     if (response.body() != null) {
                         if (response.body().equals("0")) {
@@ -224,7 +225,7 @@ public class Profile_Change extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                     pd.dismiss();
                     alert("Ошибка! " + t.getMessage());
                     user = user_buf;
@@ -248,7 +249,7 @@ public class Profile_Change extends AppCompatActivity {
     View.OnClickListener confirm_listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            EditText ed = (EditText) dialog2.findViewById(R.id.code);
+            EditText ed = dialog2.findViewById(R.id.code);
 
 
             String code = ed.getText().toString();
@@ -256,24 +257,28 @@ public class Profile_Change extends AppCompatActivity {
                 Call<String> confirm_call = get_accept_change_email(code, token);
                 confirm_call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.body() != null) {
-                            if (response.body().equals("1")) {
-                                AlertDialog.Builder bui = new AlertDialog.Builder(Profile_Change.this);
-                                bui.setMessage("Адрес изменен успешно");
-                                bui.setNegativeButton("Продолжить", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Intent inte = getIntent();
-                                        finish();
-                                        startActivity(inte);
-                                    }
-                                });
-                                bui.create().show();
-                            } else if (response.body().equals("2")) {
-                                alert("Запрос не найден! Попробуйте отправить запрос на смену пароля ещё раз!");
-                            } else if (response.body().equals("0")) {
-                                alert("Код неверен! Попробуйте ещё раз!");
+                            switch (response.body()) {
+                                case "1":
+                                    AlertDialog.Builder bui = new AlertDialog.Builder(Profile_Change.this);
+                                    bui.setMessage("Адрес изменен успешно");
+                                    bui.setNegativeButton("Продолжить", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent inte = getIntent();
+                                            finish();
+                                            startActivity(inte);
+                                        }
+                                    });
+                                    bui.create().show();
+                                    break;
+                                case "2":
+                                    alert("Запрос не найден! Попробуйте отправить запрос на смену пароля ещё раз!");
+                                    break;
+                                case "0":
+                                    alert("Код неверен! Попробуйте ещё раз!");
+                                    break;
                             }
                         } else {
                             alert("Ошибка сервера");
@@ -281,7 +286,7 @@ public class Profile_Change extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                         alert("Ошибка" + t.getMessage());
                     }
                 });
@@ -301,7 +306,7 @@ public class Profile_Change extends AppCompatActivity {
 
                 get_call_email_request(text.getText().toString(), token).enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
 
                         if (response.body() != null) {
                             Log.d("succ", response.body());
@@ -317,8 +322,9 @@ public class Profile_Change extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Log.d("err", t.getMessage());
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        if (t.getMessage() != null)
+                            Log.d("err", t.getMessage());
                     }
                 });
             } else {
@@ -394,12 +400,11 @@ public class Profile_Change extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            onBackPressed();
 
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
 
@@ -419,10 +424,9 @@ public class Profile_Change extends AppCompatActivity {
     private Call<UserList> get_call_user() {
 
         ApiInterface api = get_gson_api();//get api realization
-        Call<UserList> res = api.get_user("get", "get_user", token);
 
 
-        return res;
+        return api.get_user("get", "get_user", token);
 
     }
 
@@ -432,8 +436,7 @@ public class Profile_Change extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 // add other factories here, if needed.
                 .build();
-        ApiInterface api = retrofit.create(ApiInterface.class);
-        return api;
+        return retrofit.create(ApiInterface.class);
     }
 
     private ApiInterface get_string_api() {
@@ -442,8 +445,7 @@ public class Profile_Change extends AppCompatActivity {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 // add other factories here, if needed.
                 .build();
-        ApiInterface api = retrofit.create(ApiInterface.class);
-        return api;
+        return retrofit.create(ApiInterface.class);
     }
 
     private Call<String> get_call_email_request(String email, String token) {

@@ -14,8 +14,8 @@ public class TournamentAdapter extends BaseAdapter {
 
 
     Context context;
-    ArrayList<Tournament> tours;
-    LayoutInflater inf;
+    private ArrayList<Tournament> tours;
+    private LayoutInflater inf;
 
     TournamentAdapter(ArrayList<Tournament> a, Context cont) {
         tours = a;//set main objects
