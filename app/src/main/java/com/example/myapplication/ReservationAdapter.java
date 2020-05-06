@@ -4,18 +4,16 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ReservationAdapter extends BaseAdapter {
 
     ArrayList<Reservation_code> list;
     Context context;
-    LayoutInflater inf;
+    private LayoutInflater inf;
 
     ReservationAdapter(ArrayList<Reservation_code> codelist, Context cont){
         context=cont;//getting activity context

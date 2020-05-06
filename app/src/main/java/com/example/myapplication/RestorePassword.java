@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -14,13 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 
 import java.security.MessageDigest;
@@ -57,7 +56,9 @@ public class RestorePassword extends Login implements View.OnClickListener {
         setSupportActionBar(toolbar);
         setTitle("Результаты");
         ActionBar act=getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true);
+        if (act != null) {
+            act.setDisplayHomeAsUpEnabled(true);
+        }
 
         //TextView tbtext=findViewById(R.id.toolbar_text);
         //tbtext.setText("Восстановление пароля");
@@ -80,7 +81,7 @@ public class RestorePassword extends Login implements View.OnClickListener {
                 Call<String>  add_restore = get_call_add_restore(email);
                 add_restore.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call,@NonNull Response<String> response) {
                         pd.dismiss();
                         String res;
                         if(response.body() != null ){
@@ -102,7 +103,7 @@ public class RestorePassword extends Login implements View.OnClickListener {
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call,@NonNull Throwable t) {
                         pd.dismiss();
                         show_error();
 
@@ -145,23 +146,26 @@ public class RestorePassword extends Login implements View.OnClickListener {
 
                     valid_call.enqueue(new Callback<String>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(@NonNull Call<String> call,@NonNull Response<String> response) {
                             pd.dismiss();
-                            Log.d("_____success", response.body());
-                            String res=response.body().substring(0,1);
-                            if(res.equals("1")) {
-                                login=response.body().substring(1);
-                                Log.d("login", login);
-                                switch_screen(2);
+                            if (response.body() != null) {
+                                Log.d("_____success", response.body());
+                                String res=response.body().substring(0,1);
+                                if(res.equals("1")) {
+                                    login=response.body().substring(1);
+                                    Log.d("login", login);
+                                    switch_screen(2);
 
-                            } else if(res.equals("0")){
-                                show_error("Код не подошёл! Попробуйте ещё раз!");
+                                } else if(res.equals("0")){
+                                    show_error("Код не подошёл! Попробуйте ещё раз!");
+                                }
                             }
+
 
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(@NonNull Call<String> call,@NonNull Throwable t) {
                             pd.dismiss();
                             show_error();
 
@@ -202,8 +206,10 @@ public class RestorePassword extends Login implements View.OnClickListener {
                         restore_call.enqueue(new Callback<String>() {
 
                             @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
-                                Log.d("________success", response.body());
+                            public void onResponse(@NonNull Call<String> call,@NonNull Response<String> response) {
+                                if (response.body() != null) {
+                                    Log.d("________success", response.body());
+                                }
                                 pd.dismiss();
                                 if(response.body()!=null){
                                     String res=response.body();
@@ -231,8 +237,9 @@ public class RestorePassword extends Login implements View.OnClickListener {
                             }
 
                             @Override
-                            public void onFailure(Call<String> call, Throwable t) {
+                            public void onFailure(@NonNull Call<String> call,@NonNull Throwable t) {
                                 pd.dismiss();
+                                if(t.getMessage()!=null)
                                 Log.d("______fail", t.getMessage());
                                 show_error();
                             }
@@ -276,7 +283,7 @@ public class RestorePassword extends Login implements View.OnClickListener {
         email_edit.setTextColor(getResources().getColor(R.color.textcolor));
         content.addView(email_edit);
 
-        Button bt1=(Button)getLayoutInflater().inflate(R.layout.button, null);;
+        Button bt1=(Button)getLayoutInflater().inflate(R.layout.button, null);
         bt1.setLayoutParams(lp);
         bt1.setId(BUTTON1);
         bt1.setTextColor(getResources().getColor(R.color.textcolor));
@@ -304,7 +311,9 @@ public class RestorePassword extends Login implements View.OnClickListener {
         code_edit.setTextSize(30);
         code_edit.setFilters(new InputFilter[]{new InputFilter.AllCaps(),new InputFilter.LengthFilter(4)});
         code_edit.setMaxLines(1);
-        code_edit.setGravity(View.TEXT_ALIGNMENT_CENTER);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            code_edit.setGravity(View.TEXT_ALIGNMENT_CENTER);
+        }
 
 
         code_edit.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -389,7 +398,7 @@ public class RestorePassword extends Login implements View.OnClickListener {
         return bytesToHex(md.digest());
     }
     private static String bytesToHex(byte[] bytes) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (byte byt : bytes)
             result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
         return result.toString();
@@ -431,8 +440,7 @@ public class RestorePassword extends Login implements View.OnClickListener {
                 .addConverterFactory(ScalarsConverterFactory.create())
                 // add other factories here, if needed.
                 .build();
-        ApiInterface api=retrofit.create(ApiInterface.class);
-        return  api;
+        return retrofit.create(ApiInterface.class);
     }//get api interface implementation from ApiInterface.java
 
     public ProgressDialog getPd() {
@@ -513,12 +521,11 @@ public class RestorePassword extends Login implements View.OnClickListener {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            onBackPressed();
 
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
 

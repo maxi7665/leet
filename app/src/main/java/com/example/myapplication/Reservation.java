@@ -3,8 +3,6 @@ package com.example.myapplication;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.text.SimpleDateFormat;
-
 public class Reservation {
     @SerializedName("idReservation")
     @Expose
@@ -24,9 +22,6 @@ public class Reservation {
     @SerializedName("WhenRes")
     @Expose
     private String whenRes;
-
-
-
 
 
     public String getIdReservation() {
@@ -77,13 +72,13 @@ public class Reservation {
         this.whenRes = whenRes;
     }
 
-    public void setNull(){
-        idReservation="0";
-        idComputer=0;
-        dateReservation="2000-01-01 00:00";
-        idUser="-5";
-        time="0";
-        whenRes="2000-01-01 00:00";
+    public void setNull() {
+        idReservation = "0";
+        idComputer = 0;
+        dateReservation = "2000-01-01 00:00";
+        idUser = "-5";
+        time = "0";
+        whenRes = "2000-01-01 00:00";
 
     }
 }

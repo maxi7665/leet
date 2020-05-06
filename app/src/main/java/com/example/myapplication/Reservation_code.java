@@ -38,9 +38,6 @@ public class Reservation_code {
     private String code;
 
 
-
-
-
     public String getIdReservation() {
         return idReservation;
     }
@@ -89,13 +86,13 @@ public class Reservation_code {
         this.whenRes = whenRes;
     }
 
-    public void setNull(){
-        idReservation="0";
-        idComputer=0;
-        dateReservation="2000-01-01 00:00";
-        idUser="-5";
-        time="0";
-        whenRes="2000-01-01 00:00";
+    public void setNull() {
+        idReservation = "0";
+        idComputer = 0;
+        dateReservation = "2000-01-01 00:00";
+        idUser = "-5";
+        time = "0";
+        whenRes = "2000-01-01 00:00";
 
     }
 }

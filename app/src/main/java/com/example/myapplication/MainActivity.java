@@ -71,11 +71,66 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    //public static int TAB1 = 30, TAB2 = 31,
+    public static int PAGER_ID = 32, TABS_ID = 33; //TOURNAMENT_BUTTON_ID = 34;
     //String[] as={"ПРИВЕТСТВИЕ","Добро пожаловать в приложение компьютерного клуба LEET!","News2","Text2"};
     DrawerLayout mDrawer;
     String ip = "5.180.139.59";
     List<Computer> compList;//list of computers
     List<Reservation> resList;//list of reservations
+    List<Tournament> tourList;//list of tournaments
+    int flagres;//flag for one time visualisation reserve
+    int flag_auth;//flag for authorization
+    String token = "";
+    AlertDialog.Builder ad;
+    List<Reservation_code> res_code;
+    AdapterView.OnItemClickListener past_listener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (id != -1) {
+                Intent startResult = new Intent(MainActivity.this, TournamentResult.class);
+                startResult.putExtra("ip", ip);
+                startResult.putExtra("id", (int) id);
+                startActivity(startResult);
+            }
+        }
+    };
+    AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TextView text = view.findViewById(R.id.tour_name);
+
+            Intent intent = new Intent(MainActivity.this, TournamentRegistration.class);
+            intent.putExtra("ip", ip);
+            intent.putExtra("id", id);
+            intent.putExtra("token", token);
+            if (!text.getText().toString().equals("Не запланировано турниров!"))
+                startActivity(intent);
+
+
+        }
+    };
+    AdapterView.OnItemClickListener res_listener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent(MainActivity.this, ViewReservation.class);
+            intent.putExtra("id", (int) id);
+            intent.putExtra("token", token);
+            intent.putExtra("ip", ip);
+            startActivityForResult(intent, 2);
+        }
+    };
+    View.OnClickListener abou = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AlertDialog.Builder abo = new AlertDialog.Builder(MainActivity.this);
+
+            abo.setMessage("LEET v2.0\n21.04.2020\n\nРазработка\nn1z3r\nBobbyLab");
+            abo.setTitle("О программе");
+            abo.setPositiveButton("ОК", null);
+            abo.create().show();
+        }
+    };
 
     public List<Tournament> getTourList() {
         return tourList;
@@ -84,16 +139,6 @@ public class MainActivity extends AppCompatActivity {
     public void setTourList(List<Tournament> tourList) {
         this.tourList = tourList;
     }
-
-    List<Tournament> tourList;//list of tournaments
-    int flagres;//flag for one time visualisation reserve
-    int flag_auth;//flag for authorization
-    String token = "";
-    AlertDialog.Builder ad;
-
-
-    //public static int TAB1 = 30, TAB2 = 31,
-    public static int PAGER_ID = 32, TABS_ID = 33; //TOURNAMENT_BUTTON_ID = 34;
 
     public ProgressDialog getPd() {
         ProgressDialog pd = new ProgressDialog(this);
@@ -108,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
         return pd;
     }
 
-
     public List<Reservation_code> getRes_code() {
         return res_code;
     }
@@ -117,11 +161,9 @@ public class MainActivity extends AppCompatActivity {
         this.res_code = res_code;
     }
 
-    List<Reservation_code> res_code;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         getPd();
         mDrawer = findViewById(R.id.drawer_layout);
         res_code = new ArrayList<>();
@@ -172,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
     }
-
 
     void news() {
         final ProgressDialog pd = getPd();
@@ -229,7 +270,6 @@ public class MainActivity extends AppCompatActivity {
         content.addView(initNews(as[0],as[1]));
         content.addView(initNews("ТЕСТОВАЯ","ЗАПИСЬ"));*/
     }//getting news from server
-
 
     void reservation() {
         final ProgressDialog pd = getPd();
@@ -410,7 +450,6 @@ public class MainActivity extends AppCompatActivity {
 
     }//get tournament
 
-
     private void show_tournaments() {
         LinearLayout future = new LinearLayout(getApplicationContext());
         future.setOrientation(LinearLayout.VERTICAL);
@@ -511,36 +550,6 @@ public class MainActivity extends AppCompatActivity {
 
         tabs(views);
     }
-
-    AdapterView.OnItemClickListener past_listener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (id != -1) {
-                Intent startResult = new Intent(MainActivity.this, TournamentResult.class);
-                startResult.putExtra("ip", ip);
-                startResult.putExtra("id", (int) id);
-                startActivity(startResult);
-            }
-        }
-    };
-
-
-    AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            TextView text = view.findViewById(R.id.tour_name);
-
-            Intent intent = new Intent(MainActivity.this, TournamentRegistration.class);
-            intent.putExtra("ip", ip);
-            intent.putExtra("id", id);
-            intent.putExtra("token", token);
-            if (!text.getText().toString().equals("Не запланировано турниров!"))
-                startActivity(intent);
-
-
-        }
-    };
-
 
     private void tabs(List<View> list) {
         LinearLayout content = findViewById(R.id.content_layout);
@@ -646,19 +655,6 @@ public class MainActivity extends AppCompatActivity {
 
     }//show user's reservation after getting it from server
 
-
-    AdapterView.OnItemClickListener res_listener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent intent = new Intent(MainActivity.this, ViewReservation.class);
-            intent.putExtra("id", (int) id);
-            intent.putExtra("token", token);
-            intent.putExtra("ip", ip);
-            startActivityForResult(intent, 2);
-        }
-    };
-
-
     void visualizeNews(final List<News> a) {
         LinearLayout content = findViewById(R.id.content_layout);
         content.removeAllViews();
@@ -690,7 +686,6 @@ public class MainActivity extends AppCompatActivity {
         //list.setPadding(15,15,15,15);
         content.addView(list);
     }
-
 
     LinearLayout showError(Throwable t, final int rep) {//show error on screen
         LinearLayout content = findViewById(R.id.content_layout);
@@ -739,7 +734,6 @@ public class MainActivity extends AppCompatActivity {
         //content.addView(a);
         return a;
     }
-
 
     void setNavigation() {
 
@@ -804,18 +798,6 @@ public class MainActivity extends AppCompatActivity {
 
         about.setOnClickListener(abou);
     }
-
-    View.OnClickListener abou = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            AlertDialog.Builder abo = new AlertDialog.Builder(MainActivity.this);
-
-            abo.setMessage("LEET v2.0\n21.04.2020\n\nРазработка\nn1z3r\nBobbyLab");
-            abo.setTitle("О программе");
-            abo.setPositiveButton("ОК", null);
-            abo.create().show();
-        }
-    };
 
     void visualizeReservation() {//here comes the layout for view reservations
         final List<Computer> comp = getCompList();
@@ -985,28 +967,28 @@ public class MainActivity extends AppCompatActivity {
         return a;
     }
 
-    void setCompList(List<Computer> a) {
-        compList = a;
-    }
-
     List<Computer> getCompList() {
         return compList;
     }
 
-    void setResList(List<Reservation> a) {
-        resList = a;
+    void setCompList(List<Computer> a) {
+        compList = a;
     }
 
     List<Reservation> getResList() {
         return resList;
     }
 
-    void setFlagres(int f) {
-        flagres = f;
+    void setResList(List<Reservation> a) {
+        resList = a;
     }
 
     int getFlagres() {
         return flagres;
+    }
+
+    void setFlagres(int f) {
+        flagres = f;
     }
 
     public Date parseDateTime(String datetime) {
@@ -1036,12 +1018,12 @@ public class MainActivity extends AppCompatActivity {
         return buf;
     }*/
 
-    public void set_flag_auth(int flag_auth) {
-        this.flag_auth = flag_auth;
-    }
-
     public int get_flag_auth() {
         return flag_auth;
+    }
+
+    public void set_flag_auth(int flag_auth) {
+        this.flag_auth = flag_auth;
     }
 
     private String get_restore_token() {
